@@ -1,4 +1,19 @@
 Option Explicit
+Sub Shortcut()
+    'Activate shortcut keys
+    Application.OnKey "^r", "CreateGraphExample"
+    Application.OnKey "^k", "Macro1"
+    Application.OnKey "^t", "Downhole"
+    Application.OnKey "^+t", "AxesReset"
+    Application.OnKey "^+i", "InputSheet"
+    Application.OnKey "^n", "ScatterDiagram"
+    Application.OnKey "^+n", "ReScatter"
+    Application.OnKey "^r", "CreateGraphExample"
+    Application.OnKey "^r", "CreateGraphExample"
+    Application.OnKey "^r", "CreateGraphExample"
+    
+End Sub
+
 
 Sub CreateGraphExample()
 '
@@ -555,5 +570,3 @@ Sub ReScatter()
     Next Gr
 
 End Sub
-
-
