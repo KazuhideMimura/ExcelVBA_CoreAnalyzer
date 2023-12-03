@@ -20,7 +20,7 @@ https://learn.microsoft.com/DeployOffice/security/internet-macros-blocked#guidan
 
 If you have security concerns, please see <a href="/writeVBA/">writeVBA</a>
 
-### usage
+### usage of excel file
 
 1. Create a new worksheet (any sheet name) and paste your data. Element name should be placed horizontally. 
 <p align="center">
