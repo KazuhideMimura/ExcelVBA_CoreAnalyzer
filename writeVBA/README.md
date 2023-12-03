@@ -20,7 +20,9 @@
   <img src="../images/module.png" width="600"> 
 </p>
 
-- Close VBA editor and press alt + F8 in any datasheet
+- Close VBA editor and back to excel datasheet (any sheet)
+
+- press alt + F8 in any datasheet
 
 - Select "Shortcut" and run
 <p align="center">
