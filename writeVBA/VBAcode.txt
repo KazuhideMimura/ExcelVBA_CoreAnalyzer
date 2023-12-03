@@ -8,10 +8,6 @@ Sub Shortcut()
     Application.OnKey "^+i", "InputSheet"
     Application.OnKey "^n", "ScatterDiagram"
     Application.OnKey "^+n", "ReScatter"
-    Application.OnKey "^r", "CreateGraphExample"
-    Application.OnKey "^r", "CreateGraphExample"
-    Application.OnKey "^r", "CreateGraphExample"
-    
 End Sub
 
 
