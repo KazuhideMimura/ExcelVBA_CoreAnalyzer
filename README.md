@@ -5,8 +5,7 @@ Excel VBA to generate downhole profiles and scatter diagrams
   <img src="images/scatter.png" width="1200"> 
 </p>
 
-# How to use
-### Download
+# Download and activate macro
 - Select <a href="/CoreAnalyzer_v2_2.xlsm">CoreAnalyzer_v2_2.xlsm</a> and download.
 <p align="center">
   <img src="images/download.png" width="1200"> 
@@ -20,8 +19,8 @@ https://learn.microsoft.com/DeployOffice/security/internet-macros-blocked#guidan
 
 If you have security concerns, please see <a href="/writeVBA/">writeVBA</a>
 
-### usage of excel file
 
+# usage of excel file
 1. Create a new worksheet (any sheet name) and paste your data. Element name should be placed horizontally. 
 <p align="center">
   <img src="images/datasheet.png" width="1200"> 

@@ -27,4 +27,4 @@
   <img src="../images/run_shortcut.png" width="600"> 
 </p>
 
-- Follow <a href="../README.md###usage-of-excel-file">usage of excel file</a>.
+- Follow <a href="../README.md#usage-of-excel-file">usage of excel file</a>.
