@@ -1,0 +1,559 @@
+Option Explicit
+
+Sub CreateGraphExample()
+'
+' Create Examples of downhole and scatter diagram
+' Keyboard Shortcut: Ctrl+r
+    Application.ScreenUpdating = False
+    Dim i As Integer, j As Integer, NumSeries As Integer, SName As String, sn0 As String
+    Dim iRowStart As Integer, iRowEnd As Integer, iColumn As Integer, iColor As Long, iRed As Long, iGreen As Long, iBlue As Long
+    Dim XColumn As Integer, YColumn As Integer
+    Dim ElRow As Integer, ElStart As Integer, ElEnd As Integer, DpColumn As Integer
+        
+    sn0 = Cells(32, 1).Value
+        
+    ElRow = Cells(2, 2).Value
+    ElStart = Cells(4, 2).Value
+    ElEnd = Cells(4, 3).Value
+    DpColumn = Cells(6, 2).Value
+    NumSeries = Cells(7, 2).Value
+    
+    With ActiveSheet.ChartObjects.Add(500, 50, 150, 300).Chart
+        .ChartType = xlXYScatterLines
+        .HasTitle = True
+        .ChartTitle.Text = Worksheets(sn0).Cells(ElRow, ElStart).Value
+        .HasLegend = False
+        
+         For i = 1 To NumSeries
+            iColor = Cells(9 + i, 5).Interior.Color
+            iRed = iColor Mod 256
+            iGreen = Int(iColor / 256) Mod 256
+            iBlue = Int(iColor / 256 / 256)
+            
+            iRowStart = Cells(9 + i, 2).Value
+            iRowEnd = Cells(9 + i, 3).Value
+            iColumn = ElStart
+            SName = Cells(9 + i, 4).Value
+            .SeriesCollection.NewSeries
+            With .SeriesCollection(i)
+                .Name = SName
+                .XValues = Range(Worksheets(sn0).Cells(iRowStart, iColumn), Worksheets(sn0).Cells(iRowEnd, iColumn))
+                .Values = Range(Worksheets(sn0).Cells(iRowStart, DpColumn), Worksheets(sn0).Cells(iRowEnd, DpColumn))
+                .MarkerStyle = xlMarkerStyleCircle
+                .Format.Fill.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+                .Format.Line.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+                
+            End With
+            
+        Next i
+        
+    End With
+    
+    With ActiveSheet.ChartObjects(1).Chart.Axes(xlCategory)
+        .HasTitle = False
+        ' .TickLabels.NumberFormatLocal = "G/標準"
+    End With
+        
+    With ActiveSheet.ChartObjects(1).Chart.Axes(xlValue)
+        .HasTitle = False
+        .ReversePlotOrder = True
+        ' .TickLabels.NumberFormatLocal = "G/標準"
+    End With
+    
+    ActiveSheet.ChartObjects(1).Select
+    Call Macro1
+    
+     With ActiveSheet.ChartObjects.Add(800, 50, 300, 300).Chart
+        .ChartType = xlXYScatter
+        .HasTitle = False
+        .HasLegend = False
+        
+         For i = 1 To NumSeries
+            iColor = Cells(9 + i, 5).Interior.Color
+            iRed = iColor Mod 256
+            iGreen = Int(iColor / 256) Mod 256
+            iBlue = Int(iColor / 256 / 256)
+            
+            iRowStart = Cells(9 + i, 2).Value
+            iRowEnd = Cells(9 + i, 3).Value
+            iColumn = ElStart
+            SName = Cells(9 + i, 4).Value
+            .SeriesCollection.NewSeries
+            With .SeriesCollection(i)
+                .Name = SName
+                .XValues = Range(Worksheets(sn0).Cells(iRowStart, iColumn), Worksheets(sn0).Cells(iRowEnd, iColumn))
+                .Values = Range(Worksheets(sn0).Cells(iRowStart, iColumn + 1), Worksheets(sn0).Cells(iRowEnd, iColumn + 1))
+                .MarkerStyle = xlMarkerStyleCircle
+                .Format.Fill.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+'                .Format.Line.Visible = msoFalse
+            End With
+            
+        Next i
+        
+    End With
+    
+    With ActiveSheet.ChartObjects(2).Chart.Axes(xlCategory)
+        .HasTitle = True
+        .AxisTitle.Text = Worksheets(sn0).Cells(ElRow, ElStart).Value
+        ' .TickLabels.NumberFormatLocal = "G/標準"
+    End With
+        
+    With ActiveSheet.ChartObjects(2).Chart.Axes(xlValue)
+        .HasTitle = True
+        .AxisTitle.Text = Worksheets(sn0).Cells(ElRow, ElStart + 1).Value
+        ' .TickLabels.NumberFormatLocal = "G/標準"
+    End With
+    
+    ActiveSheet.ChartObjects(2).Select
+    Call Macro1
+    
+    Range(Cells(10 + NumSeries, 5), Cells(30, 5)).ClearFormats
+    
+    Cells(2, 10).Value = "(5) modify colors, lines of graphs as you like"
+    Cells(24, 10).Value = "(6) press ctrl + t to generate downhole variations of all the elements"
+    Range("J1,J24").Select
+    Selection.Font.Bold = True
+    
+    Cells(1, 1).Select
+        
+End Sub
+
+
+Option Explicit
+
+Sub Macro1()
+'
+' Keyboard Shortcut: Ctrl+k
+' Make a selected graph clear
+' k comes from "Kato-Nakamura-Yasukawa lab-like"
+
+'Font
+    ActiveChart.ChartArea.Font.Name = "Arial"
+    ActiveChart.ChartArea.Font.ColorIndex = 1
+        
+'Axis
+    ActiveChart.Axes(xlValue).Format.Line.ForeColor.RGB = RGB(0, 0, 0)
+    ActiveChart.Axes(xlValue).MajorTickMark = xlInside
+    ActiveChart.Axes(xlCategory).Format.Line.ForeColor.RGB = RGB(0, 0, 0)
+    ActiveChart.Axes(xlCategory).MajorTickMark = xlInside
+    
+'Design
+    ActiveChart.Axes(xlValue).MajorGridlines.Delete
+    ActiveChart.Axes(xlCategory).MajorGridlines.Delete
+    ActiveChart.PlotArea.Format.Line.ForeColor.RGB = RGB(0, 0, 0)
+    ActiveChart.ChartArea.Border.LineStyle = 0
+    
+End Sub
+
+
+Option Explicit
+
+Sub Downhole()
+'
+' Downhole Macro
+' Keyboard Shortcut: Ctrl+t
+' Generate downhole variations of all elements (全元素の深度方向グラフを作成)
+'
+    Application.ScreenUpdating = False
+    Dim i As Integer, NumSeries As Integer, SName As String, sn0 As String, sn1 As String, sn2 As String
+    Dim iRowStart As Integer, iRowEnd As Integer, iColumn As Integer
+    Dim XColumn As Integer, YColumn As Integer
+    Dim ElRow As Integer, ElStart As Integer, ElEnd As Integer, DpColumn As Integer
+    Dim k As Integer, kCnt As Integer
+    
+    sn0 = Cells(32, 1).Value
+    sn1 = sn0 & "_1"
+    sn2 = sn0 & "_2"
+        
+    ElRow = Cells(2, 2).Value
+    ElStart = Cells(4, 2).Value
+    ElEnd = Cells(4, 3).Value
+    DpColumn = Cells(6, 2).Value
+    NumSeries = Cells(7, 2).Value
+    
+    ActiveSheet.ChartObjects(1).Copy
+    Sheets.Add After:=ActiveSheet
+    ActiveSheet.Name = sn2
+    
+    For k = ElStart To ElEnd
+        kCnt = k - ElStart + 1
+        Cells(1, 3 * kCnt - 2).Select
+        ActiveSheet.Paste
+        With ActiveSheet.ChartObjects(kCnt).Chart
+            .ChartTitle.Text = Worksheets(sn0).Cells(ElRow, k).Value
+            For i = 1 To NumSeries
+                iRowStart = Worksheets(sn1).Cells(9 + i, 2).Value
+                iRowEnd = Worksheets(sn1).Cells(9 + i, 3).Value
+                iColumn = k
+                SName = Worksheets(sn1).Cells(9 + i, 4).Value
+                
+                With .SeriesCollection(i)
+                    .XValues = Range(Worksheets(sn0).Cells(iRowStart, iColumn), Worksheets(sn0).Cells(iRowEnd, iColumn))
+                End With
+            Next i
+        End With
+        
+        Cells(20, 3 * kCnt - 2).Value = "Reset x"
+        Cells(21, 3 * kCnt - 2).Value = "Min"
+        Cells(22, 3 * kCnt - 2).Value = "Max"
+        Cells(23, 3 * kCnt - 2).Value = "Scatter"
+
+        Cells(20, 3 * kCnt - 1).Value = 0
+        Cells(21, 3 * kCnt - 1).Value = 0
+        
+        Cells(23, 3 * kCnt - 1).Value = 0
+        
+    Next k
+    
+    Cells(19, 1).Select
+    Selection.Value = "1: Yes, 0: No"
+    
+    Cells(25, 1).Value = "(8) press ctrl + Shift + t to change x-ranges"
+    Cells(25, 1).Font.Bold = True
+    
+    Cells(31, 1).Value = "name of datasheet"
+    Cells(32, 1).Value = sn0
+    
+    Cells(1, 1).Select
+            
+End Sub
+Sub AxesReset()
+'
+' ScatterDiagrams Macro
+' Keyboard Shortcut: Ctrl+Shift+T
+' Reset x axis ranges (x軸の範囲を設定する)
+'
+    Application.ScreenUpdating = False
+    Dim kCnt As Integer, kMax As Integer, xMin As Double, xMax As Double
+    
+    
+    kMax = ActiveSheet.ChartObjects.Count
+    
+    For kCnt = 1 To kMax
+        
+        If Cells(20, 3 * kCnt - 1).Value = 1 Then
+            xMin = Cells(21, 3 * kCnt - 1).Value
+            xMax = Cells(22, 3 * kCnt - 1).Value
+            
+            With ActiveSheet.ChartObjects(kCnt).Chart.Axes(xlCategory)
+                .MinimumScale = xMin
+                .MaximumScale = xMax
+            End With
+        
+        End If
+        
+    Next kCnt
+    
+    Cells(27, 1).Value = "(10) press ctrl + n to create scatter diagrams"
+    Cells(27, 1).Font.Bold = True
+
+End Sub
+
+Option Explicit
+
+Sub InputSheet()
+'
+' InputSheet Macro
+' 入力シートを作成
+'
+' Keyboard Shortcut: Ctrl+Shift+I
+'
+    ' Create a new worksheet
+    Application.ScreenUpdating = False
+    Dim sn0 As String, sn1 As String
+    Dim i As Integer
+    
+    sn0 = ActiveSheet.Name
+    sn1 = sn0 & "_1"
+    Sheets.Add After:=ActiveSheet
+    ActiveSheet.Name = sn1
+    
+    ' Create input foam (入力フォームの作成)
+    Cells(1, 1).Value = "(3) select rows, columns to be referenced"
+    Cells(1, 6).Value = "(4) press ctrl + r to generate graph example"
+
+    
+    Cells(2, 1).Value = "element row"
+    Cells(3, 2).Value = "start"
+    Cells(3, 3).Value = "end"
+    Cells(4, 1).Value = "elements column"
+    Cells(4, 4).Value = "*designate by number"
+    Cells(6, 1).Value = "depth column"
+    Cells(6, 4).Value = "*designate by number"
+    Cells(7, 1).Value = "number of series"
+    Cells(7, 4).Value = "*calculated automatically"
+    Cells(9, 2).Value = "start"
+    Cells(9, 3).Value = "end"
+    Cells(9, 4).Value = "name"
+    Cells(9, 5).Value = "color"
+    Cells(10, 6).Value = "*designate row numbesr"
+    Cells(11, 6).Value = "*Do not use special characters such as ',' and '$' in series names"
+    
+    Range("B2,B4:C4, B6, B10:C10").Value = 1
+    Cells(7, 2).Value = "=COUNT(B10:B29)"
+    Range("D10").Value = "Unit 1"
+    Range("B2,B4:C4, B6, B10:D29").Interior.ColorIndex = 6
+    
+    For i = 1 To 20
+        Cells(9 + i, 1).Value = "Series" & i
+        Cells(9 + i, 5).Interior.ColorIndex = i + 3
+    Next i
+        
+    Cells(31, 1).Value = "name of datasheet"
+    Cells(32, 1).Value = sn0
+    
+    Columns("A").ColumnWidth = 15
+    Range("A1,F1").Select
+    Selection.Font.Bold = True
+    
+    Cells(1, 1).Select
+    
+End Sub
+
+Option Explicit
+Sub ScatterDiagram()
+'
+' Macro5 Macro
+' Keyboard Shortcut: Ctrl+n
+' 選択した元素について相関図を作成
+
+    Application.ScreenUpdating = False
+    Dim sn0 As String, sn1 As String, sn2 As String, sn3 As String
+    Dim kCnt As Integer, kMax As Integer, kReCnt As Integer, GrCnt As Long
+    Dim l As Integer, lRe As Integer, i As Integer
+    Dim ElRow As Integer, ElStart As Integer, NumSeries As Integer, iRowStart As Integer, iRowEnd As Integer
+    Dim xMin As Double, xMax As Double, yMin As Double, yMax As Double
+    
+    kMax = ActiveSheet.ChartObjects.Count
+    
+    sn0 = Cells(32, 1).Value
+    sn1 = sn0 & "_1"
+    sn2 = sn0 & "_2"
+    sn3 = sn0 & "_3"
+    Sheets.Add After:=ActiveSheet
+    ActiveSheet.Name = sn3
+    
+    Worksheets(sn1).ChartObjects(2).Copy
+    
+    ElRow = Worksheets(sn1).Cells(2, 2).Value
+    ElStart = Worksheets(sn1).Cells(4, 2).Value
+    NumSeries = Worksheets(sn1).Cells(7, 2).Value
+    
+    Worksheets(sn1).Cells(26, 10).Value = "(11) If you want to change the referenced column, press ctrl + Shift + N after editing the input sheet (***_1)"
+    Worksheets(sn1).Cells(26, 10).Font.Bold = True
+    
+    GrCnt = 0
+    For kCnt = 1 To kMax
+        
+        If Worksheets(sn2).Cells(23, kCnt * 3 - 1).Value = 1 Then
+            
+            kReCnt = kReCnt + 1
+            
+            lRe = 0
+            For l = 1 To kMax
+        
+                If Worksheets(sn2).Cells(23, l * 3 - 1).Value = 1 Then
+                    lRe = lRe + 1
+                    GrCnt = GrCnt + 1
+                    ActiveSheet.Cells(kReCnt * 18 - 17, lRe * 6 - 5).Select
+                    ActiveSheet.Paste
+                    
+                    With ActiveSheet.ChartObjects(GrCnt).Chart
+                            
+                            
+                            
+                            For i = 1 To NumSeries
+                                iRowStart = Worksheets(sn1).Cells(9 + i, 2).Value
+                                iRowEnd = Worksheets(sn1).Cells(9 + i, 3).Value
+                                
+                
+                                With .SeriesCollection(i)
+                                    .Values = Range(Worksheets(sn0).Cells(iRowStart, ElStart + kCnt - 1), Worksheets(sn0).Cells(iRowEnd, ElStart + kCnt - 1))
+                                    .XValues = Range(Worksheets(sn0).Cells(iRowStart, ElStart + l - 1), Worksheets(sn0).Cells(iRowEnd, ElStart + l - 1))
+                                End With
+                            Next i
+                    End With
+                    
+                    ActiveSheet.ChartObjects(GrCnt).Chart.Axes(xlValue).AxisTitle.Text = Worksheets(sn0).Cells(ElRow, ElStart + kCnt - 1).Value
+                    ActiveSheet.ChartObjects(GrCnt).Chart.Axes(xlCategory).AxisTitle.Text = Worksheets(sn0).Cells(ElRow, ElStart + l - 1).Value
+                    
+                    If Worksheets(sn2).Cells(20, 3 * kCnt - 1).Value = 1 Then
+                        yMin = Worksheets(sn2).Cells(21, 3 * kCnt - 1).Value
+                        yMax = Worksheets(sn2).Cells(22, 3 * kCnt - 1).Value
+                        
+                        With ActiveSheet.ChartObjects(GrCnt).Chart.Axes(xlValue)
+                            .MinimumScale = yMin
+                            .MaximumScale = yMax
+                        End With
+                        
+                    End If
+                    
+                    If Worksheets(sn2).Cells(20, 3 * l - 1).Value = 1 Then
+                        xMin = Worksheets(sn2).Cells(21, 3 * l - 1).Value
+                        xMax = Worksheets(sn2).Cells(22, 3 * l - 1).Value
+                        
+                        With ActiveSheet.ChartObjects(GrCnt).Chart.Axes(xlCategory)
+                            .MinimumScale = xMin
+                            .MaximumScale = xMax
+                        End With
+                        
+                    End If
+                    
+                End If
+                
+            Next l
+            
+        End If
+        
+    Next kCnt
+    
+    ActiveSheet.ChartObjects(1).Activate
+    ActiveChart.SetElement (msoElementLegendRight)
+    ActiveChart.Legend.Select
+    With Selection.Format.Line
+        .Visible = msoTrue
+        .ForeColor.ObjectThemeColor = msoThemeColorText1
+        .ForeColor.TintAndShade = 0
+        .ForeColor.Brightness = 0
+        .Transparency = 0
+    End With
+    
+    Cells(1, 1).Select
+        
+End Sub
+
+
+Option Explicit
+
+Sub ReScatter()
+'
+' ReScatter Macro
+' Regenerate scatter diagrams after modifying the input sheet (入力シートを再設定してグラフを書き直す)
+' Keyboard Shortcut: Ctrl+Shift+N
+'
+    
+    Application.ScreenUpdating = False
+    Dim sn0 As String, sn1 As String, sn2 As String, sn3 As String
+    Dim kMax As Integer, Gr As Long, GrMax2 As Long, GrMax3 As Long, i As Integer, j As Integer, k As Integer
+    Dim SrFormula As String, ElName1 As Variant, ElName2 As Variant, ElName3 As Variant
+    Dim XColumn As String, YColumn As String, NumSeries As Integer, iRowStart As Integer, iRowEnd As Integer
+    Dim XRange As String, YRange As String
+    
+    sn0 = Cells(32, 1).Value
+    sn1 = sn0 & "_1"
+    sn2 = sn0 & "_2"
+    sn3 = sn0 & "_3"
+    
+    GrMax2 = Worksheets(sn2).ChartObjects.Count
+    GrMax3 = Worksheets(sn3).ChartObjects.Count
+    NumSeries = Worksheets(sn1).Cells(7, 2).Value
+    j = Worksheets(sn3).ChartObjects(1).Chart.SeriesCollection.Count
+    
+'Change number of seriese (系列数の変更)
+    If NumSeries > j Then
+        For Gr = 1 To GrMax2
+            For k = 1 To NumSeries - j
+                Worksheets(sn2).ChartObjects(Gr).Chart.SeriesCollection.NewSeries
+            Next k
+        Next Gr
+        
+        For Gr = 1 To GrMax3
+            For k = 1 To NumSeries - j
+                Worksheets(sn3).ChartObjects(Gr).Chart.SeriesCollection.NewSeries
+            Next k
+        Next Gr
+    End If
+    
+    If j > NumSeries Then
+        For Gr = 1 To GrMax2
+            For i = NumSeries + 1 To j
+                Worksheets(sn2).ChartObjects(Gr).Chart.SeriesCollection(NumSeries + 1).Delete
+            Next i
+        Next Gr
+        
+        For Gr = 1 To GrMax3
+            For i = NumSeries + 1 To j
+                Worksheets(sn3).ChartObjects(Gr).Chart.SeriesCollection(NumSeries + 1).Delete
+            Next i
+        Next Gr
+    End If
+                
+    
+'Change unit names and colors
+    Dim SName As String, iColor As Long, iRed As Integer, iGreen As Integer, iBlue As Integer
+    For i = 1 To NumSeries
+        SName = Worksheets(sn1).Cells(9 + i, 4).Value
+        iColor = Worksheets(sn1).Cells(9 + i, 5).Interior.Color
+        iRed = iColor Mod 256
+        iGreen = Int(iColor / 256) Mod 256
+        iBlue = Int(iColor / 256 / 256)
+        
+        For Gr = 1 To GrMax2
+            With Worksheets(sn2).ChartObjects(Gr).Chart.SeriesCollection(i)
+                .Name = SName
+                .Format.Fill.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+                .Format.Line.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+                .MarkerStyle = xlMarkerStyleCircle
+            End With
+        Next Gr
+        
+        For Gr = 1 To GrMax3
+            With Worksheets(sn3).ChartObjects(Gr).Chart.SeriesCollection(i)
+                .Name = SName
+                .Format.Fill.ForeColor.RGB = RGB(iRed, iGreen, iBlue)
+                .MarkerStyle = xlMarkerStyleCircle
+            End With
+        Next Gr
+    Next i
+        
+        
+'Change reference rows (参照範囲の変更)
+    For Gr = 1 To GrMax2
+        SrFormula = Worksheets(sn2).ChartObjects(Gr).Chart.SeriesCollection(1).Formula
+        ElName1 = Split(SrFormula, ",")
+        ElName2 = Split(ElName1(1), "$")
+        XColumn = ElName2(1)
+        ElName3 = Split(ElName1(2), "$")
+        YColumn = ElName3(1)
+        
+        For i = 1 To NumSeries
+            iRowStart = Worksheets(sn1).Cells(9 + i, 2).Value
+            iRowEnd = Worksheets(sn1).Cells(9 + i, 3).Value
+            
+            XRange = "'" & sn0 & "'!$" & XColumn & "$" & iRowStart & ":$" & XColumn & "$" & iRowEnd
+            YRange = "'" & sn0 & "'!$" & YColumn & "$" & iRowStart & ":$" & YColumn & "$" & iRowEnd
+            
+            With Worksheets(sn2).ChartObjects(Gr).Chart.SeriesCollection(i)
+                .XValues = XRange
+                .Values = YRange
+            End With
+
+        Next i
+    Next Gr
+    
+    For Gr = 1 To GrMax3
+        SrFormula = Worksheets(sn3).ChartObjects(Gr).Chart.SeriesCollection(1).Formula
+        ElName1 = Split(SrFormula, ",")
+        ElName2 = Split(ElName1(1), "$")
+        XColumn = ElName2(1)
+        ElName3 = Split(ElName1(2), "$")
+        YColumn = ElName3(1)
+        
+        For i = 1 To NumSeries
+            iRowStart = Worksheets(sn1).Cells(9 + i, 2).Value
+            iRowEnd = Worksheets(sn1).Cells(9 + i, 3).Value
+            
+            XRange = "'" & sn0 & "'!$" & XColumn & "$" & iRowStart & ":$" & XColumn & "$" & iRowEnd
+            YRange = "'" & sn0 & "'!$" & YColumn & "$" & iRowStart & ":$" & YColumn & "$" & iRowEnd
+            
+            With Worksheets(sn3).ChartObjects(Gr).Chart.SeriesCollection(i)
+                .XValues = XRange
+                .Values = YRange
+            End With
+
+        Next i
+    Next Gr
+
+End Sub
+
+
