@@ -18,7 +18,7 @@ https://learn.microsoft.com/DeployOffice/security/internet-macros-blocked#guidan
 
 - Open file and activate macro
 
-If you have security concerns, please see WriteVBA_by_yourself.md
+If you have security concerns, please see <a href="/writeVBA/">writeVBA</a>
 
 ### usage
 
