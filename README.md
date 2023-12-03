@@ -1,4 +1,4 @@
-# CoreAnalyzer
+# ExcelVBA_CoreAnalyzer
 Excel VBA to generate downhole profiles and scatter diagrams
 <p align="center">
   <img src="images/downhole1.png" width="1200"> 
@@ -62,3 +62,7 @@ If you have security concerns, please see <a href="/writeVBA/">writeVBA</a>
 
 11. (optional) If you want to change information in the input sheet, modify and press ctrl + Shift + n
 
+# Log
+- 2019.3.8 Version 1
+- 2019.4.7 Version 2
+- 2023.12.3 Publish (version 2.2)
