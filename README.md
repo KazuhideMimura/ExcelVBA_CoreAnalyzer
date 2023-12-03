@@ -17,8 +17,9 @@ https://learn.microsoft.com/DeployOffice/security/internet-macros-blocked#guidan
 
 - Open file and activate macro
 
+<br>
 If you have security concerns, please see <a href="/writeVBA/">writeVBA</a>
-
+<br>
 
 # usage of excel file
 1. Create a new worksheet (any sheet name) and paste your data. Element name should be placed horizontally. 
